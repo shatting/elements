@@ -9,21 +9,34 @@
       Ryan Faerman
 
     More info at: http://lesselements.com
------------------------------------------------------*/
 
-.gradient(@color: #F5F5F5, @start: #EEE, @stop: #FFF) {
+    stephan hattinger: incorporated http://css3please.com/
+    caveats: 
+        - there can only be one direct x filter active at a time in ie
+-----------------------------------------------------*/
+ 
+.v-gradient(@color: #F5F5F5, @start: #EEE, @stop: #FFF) {
   background: @color;
-  background: -webkit-gradient(linear,
-                               left bottom,
-                               left top,
-                               color-stop(0, @start),
-                               color-stop(1, @stop));
-  background: -ms-linear-gradient(bottom,
-                                  @start,
-                                  @stop);
-  background: -moz-linear-gradient(center bottom,
-                                   @start 0%,
-                                   @stop 100%);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(@start), to(@stop));
+  background-image: -webkit-linear-gradient(top, @start, @stop);
+  background-image:     -ms-linear-gradient(top, @start, @stop);
+  background-image:    -moz-linear-gradient(top, @start, @stop);    
+  background-image:      -o-linear-gradient(top, @start, @stop);
+  background-image:         linear-gradient(top, @start, @stop);  
+  filter: ~`"progid:DXImageTransform.Microsoft.gradient(startColorstr=@{start},endColorstr=@{stop},GradientType=0)"`;
+  zoom: 1;
+}
+
+.h-gradient(@color: #F5F5F5, @start: #EEE, @stop: #FFF) {
+  background: @color;
+  background-image: -webkit-gradient(linear, left top, right top, from(@start), to(@stop));
+  background-image: -webkit-linear-gradient(left, @start, @stop);
+  background-image:     -ms-linear-gradient(left, @start, @stop);
+  background-image:    -moz-linear-gradient(left, @start, @stop);    
+  background-image:      -o-linear-gradient(left, @start, @stop);
+  background-image:         linear-gradient(left, @start, @stop);  
+  filter: ~`"progid:DXImageTransform.Microsoft.gradient(startColorstr=@{start},endColorstr=@{stop},GradientType=1)"`;
+  zoom: 1;
 }
 .bw-gradient(@color: #F5F5F5, @start: 0, @stop: 255) {
   background: @color;
@@ -56,7 +69,7 @@
   border-radius: @radius;
   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box; 
 }
-.border-radius(@topright: 0, @bottomright: 0, @bottomleft: 0, @topleft: 0) {
+.border-radius(@topright: 0, @topleft: 0, @bottomleft: 0, @bottomright: 0) {
   -webkit-border-top-right-radius: @topright;
   -webkit-border-bottom-right-radius: @bottomright;
   -webkit-border-bottom-left-radius: @bottomleft;
@@ -91,6 +104,10 @@
   -ms-transform: rotate(@deg);
   -o-transform: rotate(@deg);
   transform: rotate(@deg);
+  
+  @radians: ~`parseInt("@{deg}".replace('deg','')) * Math.PI / 180`;
+  filter: ~`"progid:DXImageTransform.Microsoft.Matrix(M11=" + Math.cos("@{radians}") + ", M12=" + (-1*Math.sin("@{radians}")) + ",M21=" + Math.sin("@{radians}") + ", M22=" + Math.cos("@{radians}") + ", sizingMethod='auto expand')"`;
+  zoom: 1;
 }
 .scale(@ratio:1.5){
   -webkit-transform:scale(@ratio);
@@ -139,13 +156,11 @@
   -ms-transform: translate(@x, @y);
   transform: translate(@x, @y);
 }
-
 .box-rgba(@r,@g,@b,@alpha){
   background-color: transparent;
   background-color: rgba(@r, @g, @b, @alpha);   
   
-  @rgbahex: ~`"@{r}".parseInt().toString(16) + ''`;
-  
- // filter: ~`"progid:DXImageTransform.Microsoft.gradient(startColorstr=" + #99B4B490,endColorstr=#99B4B490);"`;
+  @rgbahex: ~`pad(Math.round(parseFloat("@{alpha}")*255).toString(16)) + pad(parseInt("@{r}").toString(16)) + pad(parseInt("@{g}").toString(16)) + pad(parseInt("@{b}").toString(16))`;    
+  filter: ~`"progid:DXImageTransform.Microsoft.gradient(startColorstr=#@{rgbahex},endColorstr=#@{rgbahex},GradientType=1)"`;
   zoom: 1;
 }
